@@ -56,7 +56,7 @@ const Dashboard = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
                 <StatCard title="Utilisateurs" value={stats?.users?.total.toLocaleString()} icon={Users} loading={loading} color="59, 130, 246" />
                 <StatCard title="Courses" value={stats?.rides?.total.toLocaleString()} icon={MapPin} loading={loading} color="168, 85, 247" />
-                <StatCard title="Gains totaux" value={`${stats?.earnings?.toLocaleString() || 0} €`} icon={DollarSign} loading={loading} color="34, 197, 94" />
+                <StatCard title="Gains totaux" value={`${stats?.earnings?.toLocaleString() || 0} Fc`} icon={DollarSign} loading={loading} color="34, 197, 94" />
                 <StatCard title="Courses terminées" value={stats?.rides?.completed.toLocaleString()} icon={Clock} loading={loading} color="234, 179, 8" />
             </div>
 
@@ -72,7 +72,7 @@ const Dashboard = () => {
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                         <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}€`} />
+                        <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}Fc`} />
                         <Tooltip
                             contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px' }}
                             itemStyle={{ color: 'var(--primary)' }}

@@ -95,7 +95,7 @@ const Trips = () => {
                                     <td>{trip.passenger?.name || 'Inconnu'}</td>
                                     <td>{trip.driver?.name || '---'}</td>
                                     <td>{getStatusBadge(trip.status)}</td>
-                                    <td style={{ fontWeight: '600' }}>{trip.fare ? `${trip.fare} €` : '---'}</td>
+                                    <td style={{ fontWeight: '600' }}>{trip.fare ? `${trip.fare} Fc` : '---'}</td>
                                     <td style={{ color: 'var(--muted-foreground)', fontSize: '0.75rem' }}>
                                         {new Date(trip.createdAt).toLocaleString()}
                                     </td>

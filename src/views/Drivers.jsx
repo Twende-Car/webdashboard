@@ -14,10 +14,13 @@ const Drivers = () => {
     const fetchPendingDrivers = async () => {
         try {
             setLoading(true);
-            const data = await api.get('/admin/pending-drivers');
+            const { data } = await api.get('/pending-drivers');
+            console.clear()
+            console.log(data);
             setPendingDrivers(data);
             setError(null);
         } catch (err) {
+            console.log(err);
             setError('Erreur lors de la récupération des chauffeurs en attente');
             console.error(err);
         } finally {
@@ -27,7 +30,7 @@ const Drivers = () => {
 
     const approveDriver = async (id) => {
         try {
-            await api.put(`/admin/approve-driver/${id}`);
+            await api.put(`/approve-driver/${id}`);
             setPendingDrivers(pendingDrivers.filter(driver => driver.id !== id));
         } catch (err) {
             alert('Erreur lors de l\'approbation du chauffeur');

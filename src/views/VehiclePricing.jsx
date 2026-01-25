@@ -113,7 +113,7 @@ const VehiclePricing = () => {
                                 />
                             </div>
                             <div style={{ marginBottom: '1rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Prix au km (€)</label>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Prix au km (Fc)</label>
                                 <input
                                     required
                                     type="number"
@@ -177,7 +177,7 @@ const VehiclePricing = () => {
                                     </div>
                                 </div>
                                 <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.25rem' }}>{type.name}</h3>
-                                <p style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>{type.pricePerKm} € <span style={{ fontSize: '0.875rem', fontWeight: '400', color: 'var(--muted-foreground)' }}>/ km</span></p>
+                                <p style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '0.5rem' }}>{type.pricePerKm} Fc <span style={{ fontSize: '0.875rem', fontWeight: '400', color: 'var(--muted-foreground)' }}>/ km</span></p>
                                 <p style={{ color: 'var(--muted-foreground)', fontSize: '0.875rem' }}>{type.description || 'Aucune description'}</p>
                             </>
                         )}

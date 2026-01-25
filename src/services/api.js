@@ -2,6 +2,13 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:3000/admin';
 
+export const api = axios.create({
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
 export const fetchStats = async () => {
     const response = await axios.get(`${API_URL}/stats`);
     return response.data;
@@ -21,6 +28,8 @@ export const fetchVehicleTypes = async () => {
     const response = await axios.get(`${API_URL}/vehicle-types`);
     return response.data;
 };
+
+
 
 export const createVehicleType = async (data) => {
     const response = await axios.post(`${API_URL}/vehicle-types`, data);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from './layout/Sidebar';
 import Dashboard from './views/Dashboard';
 import Users from './views/Users';
+import Drivers from './views/Drivers';
 import Trips from './views/Trips';
 import LiveMap from './views/LiveMap';
 import VehiclePricing from './views/VehiclePricing';
@@ -14,6 +15,7 @@ function App() {
     switch (activeTab) {
       case 'dashboard': return <Dashboard />;
       case 'users': return <Users />;
+      case 'drivers': return <Drivers />;
       case 'trips': return <Trips />;
       case 'live-map': return <LiveMap />;
       case 'vehicle-pricing': return <VehiclePricing />;

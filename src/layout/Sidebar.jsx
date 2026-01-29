@@ -1,6 +1,7 @@
-import { LayoutDashboard, Users, MapPin, Search as SearchIcon, LogOut, ChevronRight, TrendingUp, DollarSign, Clock, Truck, UserCheck } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
+  const { user, logout } = useAuth();
   const menuItems = [
     { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
     { id: 'users', label: 'Utilisateurs', icon: Users },
@@ -47,6 +48,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
       <div style={{ marginTop: 'auto', paddingTop: '2rem' }}>
         <button
+          onClick={logout}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -59,7 +61,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             color: 'var(--destructive)',
             transition: 'all 0.2s ease',
             textAlign: 'left',
-            fontWeight: '500'
+            fontWeight: '500',
+            cursor: 'pointer'
           }}
         >
           <LogOut size={20} />

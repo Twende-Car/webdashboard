@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './layout/Sidebar';
 import Dashboard from './views/Dashboard';
 import Users from './views/Users';
@@ -6,10 +7,13 @@ import Drivers from './views/Drivers';
 import Trips from './views/Trips';
 import LiveMap from './views/LiveMap';
 import VehiclePricing from './views/VehiclePricing';
+import Login from './views/Login';
+import ProtectedRoute from './components/ProtectedRoute';
+import { useAuth } from './context/AuthContext';
 import { Search, Bell, User } from 'lucide-react';
 
-function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+function DashboardLayout({ activeTab, setActiveTab }) {
+  const { user } = useAuth();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -62,7 +66,7 @@ function App() {
               <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--primary)', display: 'grid', placeItems: 'center' }}>
                 <User size={14} color="white" />
               </div>
-              <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>Admin</span>
+              <span style={{ fontSize: '0.875rem', fontWeight: '500' }}>{user?.name || 'Admin'}</span>
             </div>
           </div>
         </header>
@@ -70,6 +74,24 @@ function App() {
         {renderContent()}
       </main>
     </div>
+  );
+}
+
+function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout activeTab={activeTab} setActiveTab={setActiveTab} />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

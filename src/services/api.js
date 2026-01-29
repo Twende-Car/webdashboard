@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/admin';
+const API_URL = 'https://twendeapi.afrimetrik.com/admin';
 
 export const api = axios.create({
     baseURL: API_URL,

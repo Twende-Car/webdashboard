@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = 'http://localhost:3000'; // Adjust if needed
+const API_URL = 'https://twendeapi.afrimetrik.com'; // Adjust if needed
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);

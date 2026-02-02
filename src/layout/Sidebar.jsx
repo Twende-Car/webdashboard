@@ -1,4 +1,5 @@
 import { useAuth } from '../context/AuthContext';
+import { LayoutDashboard, Users, UserCheck, SearchIcon, MapPin, Truck } from 'lucide-react'
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const { user, logout } = useAuth();

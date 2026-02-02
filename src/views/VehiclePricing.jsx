@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Truck, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
 import { fetchVehicleTypes, createVehicleType, updateVehicleType, deleteVehicleType } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 
 const VehiclePricing = () => {
     const [vehicleTypes, setVehicleTypes] = useState([]);
@@ -10,15 +9,14 @@ const VehiclePricing = () => {
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({ name: '', pricePerKm: '', description: '' });
 
-    const { token } = useAuth();
 
     useEffect(() => {
-        loadVehicleTypes(token);
+        loadVehicleTypes();
     }, []);
 
-    const loadVehicleTypes = async (token) => {
+    const loadVehicleTypes = async () => {
         try {
-            const data = await fetchVehicleTypes(token);
+            const data = await fetchVehicleTypes();
             setVehicleTypes(data);
         } catch (error) {
             console.error('Error loading vehicle types:', error);
@@ -33,10 +31,10 @@ const VehiclePricing = () => {
             await createVehicleType({
                 ...formData,
                 pricePerKm: parseFloat(formData.pricePerKm)
-            }, token);
+            });
             setIsAdding(false);
             setFormData({ name: '', pricePerKm: '', description: '' });
-            loadVehicleTypes(token);
+            loadVehicleTypes();
         } catch (error) {
             console.error('Error creating vehicle type:', error);
         }
@@ -47,9 +45,9 @@ const VehiclePricing = () => {
             await updateVehicleType(id, {
                 ...formData,
                 pricePerKm: parseFloat(formData.pricePerKm)
-            }, token);
+            });
             setEditingId(null);
-            loadVehicleTypes(token);
+            loadVehicleTypes();
         } catch (error) {
             console.error('Error updating vehicle type:', error);
         }
@@ -58,8 +56,8 @@ const VehiclePricing = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer ce type de véhicule ?')) {
             try {
-                await deleteVehicleType(id, token);
-                loadVehicleTypes(token);
+                await deleteVehicleType(id);
+                loadVehicleTypes();
             } catch (error) {
                 console.error('Error deleting vehicle type:', error);
             }

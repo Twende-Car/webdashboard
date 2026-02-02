@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../services/api';
+import { api, WEB_URL } from '../services/api';
 import { Check, X, FileText, Car, User, Phone, MapPin } from 'lucide-react';
-import { useAuth } from '../context/AuthContext'
+
 
 const Drivers = () => {
     const [pendingDrivers, setPendingDrivers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { token } = useAuth()
+
+
 
     useEffect(() => {
         fetchPendingDrivers();
@@ -17,11 +18,7 @@ const Drivers = () => {
     const fetchPendingDrivers = async () => {
         try {
             setLoading(true);
-            const { data } = await api.get('/pending-drivers', {
-                Headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const { data } = await api.get('/pending-drivers');
             console.clear()
             console.log(data);
             setPendingDrivers(data);
@@ -37,11 +34,7 @@ const Drivers = () => {
 
     const approveDriver = async (id) => {
         try {
-            await api.put(`/approve-driver/${id}`, {
-                Headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            await api.put(`/approve-driver/${id}`);
             setPendingDrivers(pendingDrivers.filter(driver => driver.id !== id));
         } catch (err) {
             alert('Erreur lors de l\'approbation du chauffeur');
@@ -70,7 +63,7 @@ const Drivers = () => {
                             <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
                                 <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', background: 'var(--secondary)' }}>
                                     {driver.driverPhoto ? (
-                                        <img src={`http://localhost:3000/${driver.driverPhoto}`} alt={driver.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={`${WEB_URL}/${driver.driverPhoto}`} alt={driver.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
                                         <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center' }}>
                                             <User size={32} color="var(--muted-foreground)" />
@@ -108,14 +101,14 @@ const Drivers = () => {
                                 </h4>
                                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                                     {driver.idCardPhoto && (
-                                        <div className="document-preview" onClick={() => window.open(`http://localhost:3000/${driver.idCardPhoto}`, '_blank')}>
-                                            <img src={`http://localhost:3000/${driver.idCardPhoto}`} alt="ID Card" style={{ width: '60px', height: '60px', borderRadius: '4px', objectFit: 'cover' }} />
+                                        <div className="document-preview" onClick={() => window.open(`${WEB_URL}/${driver.idCardPhoto}`, '_blank')}>
+                                            <img src={`${WEB_URL}/${driver.idCardPhoto}`} alt="ID Card" style={{ width: '60px', height: '60px', borderRadius: '4px', objectFit: 'cover' }} />
                                             <span style={{ fontSize: '0.7rem' }}>Carte ID</span>
                                         </div>
                                     )}
                                     {driver.vehiclePhotos?.map((photo, index) => (
-                                        <div key={index} className="document-preview" onClick={() => window.open(`http://localhost:3000/${photo}`, '_blank')}>
-                                            <img src={`http://localhost:3000/${photo}`} alt={`Vehicle ${index + 1}`} style={{ width: '60px', height: '60px', borderRadius: '4px', objectFit: 'cover' }} />
+                                        <div key={index} className="document-preview" onClick={() => window.open(`${WEB_URL}/${photo}`, '_blank')}>
+                                            <img src={`${WEB_URL}/${photo}`} alt={`Vehicle ${index + 1}`} style={{ width: '60px', height: '60px', borderRadius: '4px', objectFit: 'cover' }} />
                                             <span style={{ fontSize: '0.7rem' }}>Véhicule {index + 1}</span>
                                         </div>
                                     ))}

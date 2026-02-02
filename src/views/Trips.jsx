@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, MoreVertical, Download } from 'lucide-react';
 import { fetchTrips } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 
 const Trips = () => {
     const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const { token } = useAuth()
 
     useEffect(() => {
         const getTrips = async () => {
             try {
-                const data = await fetchTrips(token);
+                const data = await fetchTrips();
                 setTrips(data);
             } catch (error) {
                 console.error('Failed to fetch trips:', error);

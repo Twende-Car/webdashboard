@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { Check, X, FileText, Car, User, Phone, MapPin } from 'lucide-react';
+import { useAuth } from '../context/AuthContext'
 
 const Drivers = () => {
     const [pendingDrivers, setPendingDrivers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { token } = useAuth()
 
     useEffect(() => {
         fetchPendingDrivers();
+
     }, []);
 
     const fetchPendingDrivers = async () => {
         try {
             setLoading(true);
-            const { data } = await api.get('/pending-drivers');
+            const { data } = await api.get('/pending-drivers', {
+                Headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             console.clear()
             console.log(data);
             setPendingDrivers(data);
@@ -30,7 +37,11 @@ const Drivers = () => {
 
     const approveDriver = async (id) => {
         try {
-            await api.put(`/approve-driver/${id}`);
+            await api.put(`/approve-driver/${id}`, {
+                Headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             setPendingDrivers(pendingDrivers.filter(driver => driver.id !== id));
         } catch (err) {
             alert('Erreur lors de l\'approbation du chauffeur');

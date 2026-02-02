@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, MoreVertical, Mail, Phone } from 'lucide-react';
 import { fetchUsers } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('Tous');
+    const { token } = useAuth()
 
     useEffect(() => {
         const getUsers = async () => {
             try {
-                const data = await fetchUsers();
+                const data = await fetchUsers(token);
                 setUsers(data);
             } catch (error) {
                 console.error('Failed to fetch users:', error);

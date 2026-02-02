@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api, WEB_URL } from '../services/api';
+import { fetchPendingDriversToValidate, WEB_URL } from '../services/api';
 import { Check, X, FileText, Car, User, Phone, MapPin } from 'lucide-react';
 
 
@@ -18,9 +18,7 @@ const Drivers = () => {
     const fetchPendingDrivers = async () => {
         try {
             setLoading(true);
-            const { data } = await api.get('/pending-drivers');
-            console.clear()
-            console.log(data);
+            const data = await fetchPendingDriversToValidate();
             setPendingDrivers(data);
             setError(null);
         } catch (err) {

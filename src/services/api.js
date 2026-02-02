@@ -15,6 +15,11 @@ export const fetchStats = async () => {
     return response.data;
 };
 
+export const fetchPendingDriversToValidate = async () => {
+    const response = await axios.get(`${API_URL}/pending-drivers`);
+    return response.data;
+};
+
 export const fetchUsers = async () => {
     const response = await axios.get(`${API_URL}/users`);
     return response.data;

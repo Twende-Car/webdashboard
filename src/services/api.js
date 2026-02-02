@@ -1,4 +1,4 @@
-import axios from '../context/AuthContext';
+import axios from 'axios';
 
 const API_URL = 'https://twendeapi.afrimetrik.com/admin';
 

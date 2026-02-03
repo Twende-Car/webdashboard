@@ -16,6 +16,11 @@ export const fetchStats = async () => {
 };
 
 export const approveDriverWithId = async (id) => {
+    const response = await axios.put(`${API_URL}/approve-driver/${id}`);
+    return response.data;
+};
+
+export const fetchPendingDriversToValidate = async () => {
     const response = await axios.get(`${API_URL}/pending-drivers`);
     return response.data;
 };

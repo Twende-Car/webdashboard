@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_URL = 'https://twendeapi.afrimetrik.com/admin';
-export const WEB_URL = 'https://twende.afrimetrik.com';
+export const WEB_URL = 'https://twendeapi.afrimetrik.com';
 
 export const api = axios.create({
     baseURL: API_URL,
@@ -15,7 +15,7 @@ export const fetchStats = async () => {
     return response.data;
 };
 
-export const fetchPendingDriversToValidate = async () => {
+export const approveDriverWithId = async (id) => {
     const response = await axios.get(`${API_URL}/pending-drivers`);
     return response.data;
 };

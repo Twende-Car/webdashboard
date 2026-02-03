@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchPendingDriversToValidate, WEB_URL } from '../services/api';
+import { fetchPendingDriversToValidate, WEB_URL, approveDriverWithId } from '../services/api';
 import { Check, X, FileText, Car, User, Phone, MapPin } from 'lucide-react';
 
 
@@ -32,7 +32,7 @@ const Drivers = () => {
 
     const approveDriver = async (id) => {
         try {
-            await api.put(`/approve-driver/${id}`);
+            await approveDriverWithId(id);
             setPendingDrivers(pendingDrivers.filter(driver => driver.id !== id));
         } catch (err) {
             alert('Erreur lors de l\'approbation du chauffeur');

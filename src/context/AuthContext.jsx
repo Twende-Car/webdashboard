@@ -1,9 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { WEB_URL } from '../services/api';
 
 const AuthContext = createContext();
 
-const API_URL = 'https://twendeapi.afrimetrik.com'; // Adjust if needed
+//const API_URL = 'https://twendeapi.afrimetrik.com'; // Adjust if needed
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+            const response = await axios.post(`${WEB_URL}/auth/login`, { email, password });
             const { token: newToken, user: userData } = response.data;
 
             if (userData.role !== 'admin') {

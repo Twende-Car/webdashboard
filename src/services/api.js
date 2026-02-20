@@ -30,6 +30,11 @@ export const fetchUsers = async () => {
     return response.data;
 };
 
+export const resetUserPassword = async (userId, newPassword) => {
+    const response = await axios.post(`${API_URL}/users/${userId}/reset-password`, { newPassword });
+    return response.data;
+};
+
 export const fetchTrips = async () => {
     const response = await axios.get(`${API_URL}/rides`);
     return response.data;
@@ -58,5 +63,26 @@ export const deleteVehicleType = async (id) => {
             Authorization: `Bearer ${token}`
         }
     });
+    return response.data;
+    return response.data;
+};
+
+export const fetchDrivers = async () => {
+    const response = await axios.get(`${API_URL}/users?role=driver`);
+    return response.data;
+};
+
+export const creditDriver = async (driverId, amount) => {
+    const response = await axios.post(`${API_URL}/credit-driver`, { driverId, amount });
+    return response.data;
+};
+
+export const getCommission = async () => {
+    const response = await axios.get(`${API_URL}/commission`);
+    return response.data;
+};
+
+export const updateCommission = async (percentage) => {
+    const response = await axios.post(`${API_URL}/commission`, { percentage });
     return response.data;
 };

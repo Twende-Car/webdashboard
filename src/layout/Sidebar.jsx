@@ -10,6 +10,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'trips', label: 'Courses', icon: SearchIcon },
     { id: 'live-map', label: 'Carte en direct', icon: MapPin },
     { id: 'vehicle-pricing', label: 'Tarification', icon: Truck },
+    { id: 'settings', label: 'Paramètres', icon: Truck },
   ];
 
   return (

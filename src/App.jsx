@@ -7,6 +7,7 @@ import Drivers from './views/Drivers';
 import Trips from './views/Trips';
 import LiveMap from './views/LiveMap';
 import VehiclePricing from './views/VehiclePricing';
+import Settings from './views/Settings';
 import Login from './views/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
@@ -23,6 +24,7 @@ function DashboardLayout({ activeTab, setActiveTab }) {
       case 'trips': return <Trips />;
       case 'live-map': return <LiveMap />;
       case 'vehicle-pricing': return <VehiclePricing />;
+      case 'settings': return <Settings />;
       default: return <Dashboard />;
     }
   };

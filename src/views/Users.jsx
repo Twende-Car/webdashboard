@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreVertical, Mail, Phone } from 'lucide-react';
-import { fetchUsers } from '../services/api';
+import { Search, Filter, MoreVertical, Mail, Phone, KeyRound, X } from 'lucide-react';
+import { fetchUsers, resetUserPassword } from '../services/api';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('Tous');
+    const [menuOpen, setMenuOpen] = useState(null);
+    const [resetModal, setResetModal] = useState(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [resetLoading, setResetLoading] = useState(false);
+    const [resetError, setResetError] = useState('');
+    const [resetSuccess, setResetSuccess] = useState(false);
 
     useEffect(() => {
         const getUsers = async () => {
@@ -24,6 +31,46 @@ const Users = () => {
     const filteredUsers = filter === 'Tous'
         ? users
         : users.filter(u => (u.role === 'client' && filter === 'Client') || (u.role === 'driver' && filter === 'Chauffeur'));
+
+    const openResetModal = (user) => {
+        setMenuOpen(null);
+        setResetModal(user);
+        setNewPassword('');
+        setConfirmPassword('');
+        setResetError('');
+        setResetSuccess(false);
+    };
+
+    const closeResetModal = () => {
+        setResetModal(null);
+        setNewPassword('');
+        setConfirmPassword('');
+        setResetError('');
+        setResetSuccess(false);
+    };
+
+    const handleResetPassword = async () => {
+        if (!resetModal) return;
+        setResetError('');
+        if (!newPassword || newPassword.length < 6) {
+            setResetError('Le mot de passe doit contenir au moins 6 caractères.');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setResetError('Les deux mots de passe ne correspondent pas.');
+            return;
+        }
+        setResetLoading(true);
+        try {
+            await resetUserPassword(resetModal.id, newPassword);
+            setResetSuccess(true);
+            setTimeout(closeResetModal, 1500);
+        } catch (err) {
+            setResetError(err.response?.data?.message || 'Erreur lors de la réinitialisation.');
+        } finally {
+            setResetLoading(false);
+        }
+    };
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -111,9 +158,58 @@ const Users = () => {
                                         <span className="badge badge-success">Actif</span>
                                     </td>
                                     <td>
-                                        <button style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)' }}>
-                                            <MoreVertical size={18} />
-                                        </button>
+                                        <div style={{ position: 'relative' }}>
+                                            <button
+                                                onClick={() => setMenuOpen(menuOpen === user.id ? null : user.id)}
+                                                style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer' }}
+                                                aria-haspopup="true"
+                                                aria-expanded={menuOpen === user.id}
+                                            >
+                                                <MoreVertical size={18} />
+                                            </button>
+                                            {menuOpen === user.id && (
+                                                <>
+                                                    <div
+                                                        style={{ position: 'fixed', inset: 0, zIndex: 10 }}
+                                                        onClick={() => setMenuOpen(null)}
+                                                        aria-hidden="true"
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            right: 0,
+                                                            top: '100%',
+                                                            marginTop: '4px',
+                                                            background: 'var(--card)',
+                                                            border: '1px solid var(--border)',
+                                                            borderRadius: '8px',
+                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                                            minWidth: '200px',
+                                                            zIndex: 20
+                                                        }}
+                                                    >
+                                                        <button
+                                                            onClick={() => openResetModal(user)}
+                                                            style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.5rem',
+                                                                width: '100%',
+                                                                padding: '0.6rem 1rem',
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                color: 'var(--foreground)',
+                                                                fontSize: '0.875rem',
+                                                                textAlign: 'left'
+                                                            }}
+                                                        >
+                                                            <KeyRound size={16} /> Réinitialiser le mot de passe
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -121,6 +217,102 @@ const Users = () => {
                     </table>
                 </div>
             </div>
+
+            {resetModal && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 50
+                    }}
+                    onClick={closeResetModal}
+                >
+                    <div
+                        className="card"
+                        style={{ minWidth: '360px', maxWidth: '90%' }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>Réinitialiser le mot de passe</h2>
+                            <button onClick={closeResetModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted-foreground)' }}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <p style={{ color: 'var(--muted-foreground)', fontSize: '0.875rem', marginBottom: '1rem' }}>
+                            Nouveau mot de passe pour <strong>{resetModal.name}</strong> ({resetModal.email})
+                        </p>
+                        {resetError && (
+                            <p style={{ color: 'var(--destructive)', fontSize: '0.875rem', marginBottom: '0.75rem' }}>{resetError}</p>
+                        )}
+                        {resetSuccess && (
+                            <p style={{ color: '#22c55e', fontSize: '0.875rem', marginBottom: '0.75rem' }}>Mot de passe réinitialisé avec succès.</p>
+                        )}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                            <input
+                                type="password"
+                                placeholder="Nouveau mot de passe (min. 6 caractères)"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                style={{
+                                    padding: '0.5rem 0.75rem',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '6px',
+                                    background: 'var(--background)',
+                                    color: 'var(--foreground)'
+                                }}
+                                disabled={resetLoading}
+                            />
+                            <input
+                                type="password"
+                                placeholder="Confirmer le mot de passe"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                style={{
+                                    padding: '0.5rem 0.75rem',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '6px',
+                                    background: 'var(--background)',
+                                    color: 'var(--foreground)'
+                                }}
+                                disabled={resetLoading}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            <button
+                                onClick={closeResetModal}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '6px',
+                                    background: 'var(--card)',
+                                    color: 'var(--foreground)',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                onClick={handleResetPassword}
+                                disabled={resetLoading}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    background: 'var(--primary)',
+                                    color: 'white',
+                                    cursor: resetLoading ? 'not-allowed' : 'pointer'
+                                }}
+                            >
+                                {resetLoading ? 'En cours...' : 'Réinitialiser'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getCommission, updateCommission } from '../services/api';
 import { Save } from 'lucide-react';
+import Loader from '../components/Loader';
 
 const Settings = () => {
     const [commission, setCommission] = useState('');
@@ -42,7 +43,17 @@ const Settings = () => {
         }
     };
 
-    if (loading) return <div className="loading">Chargement...</div>;
+    if (loading) {
+        return (
+            <div className="view-container animate-fade-in">
+                <div style={{ marginBottom: '2rem' }}>
+                    <h1 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: '0.5rem' }}>Paramètres</h1>
+                    <p style={{ color: 'var(--muted-foreground)' }}>Configuration générale de l'application.</p>
+                </div>
+                <Loader label="Chargement des paramètres..." variant="block" />
+            </div>
+        );
+    }
 
     return (
         <div className="view-container animate-fade-in">

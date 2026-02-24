@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Truck, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
 import { fetchVehicleTypes, createVehicleType, updateVehicleType, deleteVehicleType } from '../services/api';
+import Loader from '../components/Loader';
 
 const VehiclePricing = () => {
     const [vehicleTypes, setVehicleTypes] = useState([]);
@@ -69,7 +70,19 @@ const VehiclePricing = () => {
         setFormData({ name: type.name, pricePerKm: type.pricePerKm, description: type.description || '' });
     };
 
-    if (loading) return <div>Chargement...</div>;
+    if (loading) {
+        return (
+            <div className="view-container">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <div>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>Tarification des Véhicules</h2>
+                        <p style={{ color: 'var(--muted-foreground)' }}>Gérez les types de véhicules et leurs prix au kilomètre</p>
+                    </div>
+                </div>
+                <Loader label="Chargement des types de véhicules..." variant="block" />
+            </div>
+        );
+    }
 
     return (
         <div className="view-container">

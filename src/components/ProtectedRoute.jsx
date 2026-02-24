@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Loader from './Loader';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth();
@@ -8,13 +9,8 @@ const ProtectedRoute = ({ children }) => {
 
     if (loading) {
         return (
-            <div style={{
-                height: '100vh',
-                display: 'grid',
-                placeItems: 'center',
-                background: 'var(--background)'
-            }}>
-                <div style={{ color: 'var(--primary)' }}>Chargement...</div>
+            <div style={{ height: '100vh', background: 'var(--background)' }}>
+                <Loader label="Vérification de la session..." variant="full" />
             </div>
         );
     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreVertical, Download } from 'lucide-react';
+import { Search, MoreVertical, Download } from 'lucide-react';
 import { fetchTrips } from '../services/api';
+import Loader from '../components/Loader';
 
 const Trips = () => {
     const [trips, setTrips] = useState([]);
@@ -88,7 +89,7 @@ const Trips = () => {
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>Chargement...</td></tr>
+                                <tr><td colSpan="7" style={{ padding: 0, verticalAlign: 'middle' }}><Loader label="Chargement des courses..." variant="block" style={{ minHeight: '180px' }} /></td></tr>
                             ) : filteredTrips.map((trip) => (
                                 <tr key={trip.id}>
                                     <td style={{ fontWeight: '600' }}>{trip.id.substring(0, 8)}</td>

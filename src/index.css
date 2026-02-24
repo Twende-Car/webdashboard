@@ -134,3 +134,19 @@ tr:hover {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
+
+/* Loader spinner animation */
+.loader-spin {
+  animation: loader-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-container {
+  flex-shrink: 0;
+}

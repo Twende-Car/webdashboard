@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Users, TrendingUp, DollarSign, Clock, MapPin } from 'lucide-react';
+import { Users, DollarSign, Clock, MapPin } from 'lucide-react';
 import { fetchStats } from '../services/api';
+import Loader from '../components/Loader';
 
 const StatCard = ({ title, value, icon: Icon, trend, color, loading }) => (
     <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -45,6 +46,18 @@ const Dashboard = () => {
         { name: 'Sam', gains: 2100 },
         { name: 'Dim', gains: 1800 },
     ];
+
+    if (loading && !stats) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <header>
+                    <h1 style={{ fontSize: '1.875rem', fontWeight: '700' }}>Tableau de bord</h1>
+                    <p style={{ color: 'var(--muted-foreground)' }}>Bienvenue sur le backoffice de DiVocab.</p>
+                </header>
+                <Loader label="Chargement des statistiques..." variant="block" />
+            </div>
+        );
+    }
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

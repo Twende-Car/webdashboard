@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreVertical, Mail, Phone, KeyRound, X } from 'lucide-react';
+import { MoreVertical, Mail, Phone, KeyRound, X } from 'lucide-react';
 import { fetchUsers, resetUserPassword } from '../services/api';
+import Loader from '../components/Loader';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
@@ -113,7 +114,7 @@ const Users = () => {
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>Chargement...</td></tr>
+                                <tr><td colSpan="6" style={{ padding: 0, verticalAlign: 'middle' }}><Loader label="Chargement des utilisateurs..." variant="block" style={{ minHeight: '180px' }} /></td></tr>
                             ) : filteredUsers.map((user) => (
                                 <tr key={user.id}>
                                     <td>

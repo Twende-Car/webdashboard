@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchPendingDriversToValidate, fetchDrivers, WEB_URL, approveDriverWithId, creditDriver } from '../services/api';
 import { Check, X, FileText, Car, User, Phone, MapPin, Wallet, CreditCard } from 'lucide-react';
+import Loader from '../components/Loader';
 
 const Drivers = () => {
     const [activeTab, setActiveTab] = useState('pending'); // 'pending' | 'all'
@@ -109,7 +110,7 @@ const Drivers = () => {
             </div>
 
             {loading ? (
-                <div className="loading">Chargement...</div>
+                <Loader label="Chargement des chauffeurs..." variant="block" />
             ) : error ? (
                 <div className="error-message">{error}</div>
             ) : drivers.length === 0 ? (

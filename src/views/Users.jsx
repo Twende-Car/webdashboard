@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MoreVertical, Mail, Phone, KeyRound, X } from 'lucide-react';
-import { fetchUsers, resetUserPassword } from '../services/api';
+import { MoreVertical, Mail, Phone, KeyRound, X, Wallet, Car, MapPin, Calendar, Eye } from 'lucide-react';
+import { fetchUsers, fetchUserDetails, resetUserPassword } from '../services/api';
 import Loader from '../components/Loader';
 
 const Users = () => {
@@ -14,6 +14,9 @@ const Users = () => {
     const [resetLoading, setResetLoading] = useState(false);
     const [resetError, setResetError] = useState('');
     const [resetSuccess, setResetSuccess] = useState(false);
+    const [detailModal, setDetailModal] = useState(null);
+    const [detailLoading, setDetailLoading] = useState(false);
+    const [detailError, setDetailError] = useState(null);
 
     useEffect(() => {
         const getUsers = async () => {
@@ -32,6 +35,26 @@ const Users = () => {
     const filteredUsers = filter === 'Tous'
         ? users
         : users.filter(u => (u.role === 'client' && filter === 'Client') || (u.role === 'driver' && filter === 'Chauffeur'));
+
+    const openDetailModal = async (user) => {
+        setMenuOpen(null);
+        setDetailModal({ id: user.id });
+        setDetailError(null);
+        setDetailLoading(true);
+        try {
+            const data = await fetchUserDetails(user.id);
+            setDetailModal(data);
+        } catch (err) {
+            setDetailError(err.response?.data?.message || 'Impossible de charger les détails');
+        } finally {
+            setDetailLoading(false);
+        }
+    };
+
+    const closeDetailModal = () => {
+        setDetailModal(null);
+        setDetailError(null);
+    };
 
     const openResetModal = (user) => {
         setMenuOpen(null);
@@ -190,6 +213,24 @@ const Users = () => {
                                                         }}
                                                     >
                                                         <button
+                                                            onClick={() => openDetailModal(user)}
+                                                            style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.5rem',
+                                                                width: '100%',
+                                                                padding: '0.6rem 1rem',
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                color: 'var(--foreground)',
+                                                                fontSize: '0.875rem',
+                                                                textAlign: 'left'
+                                                            }}
+                                                        >
+                                                            <Eye size={16} /> Voir les détails
+                                                        </button>
+                                                        <button
                                                             onClick={() => openResetModal(user)}
                                                             style={{
                                                                 display: 'flex',
@@ -218,6 +259,117 @@ const Users = () => {
                     </table>
                 </div>
             </div>
+
+            {detailModal && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 50,
+                        padding: '1rem'
+                    }}
+                    onClick={closeDetailModal}
+                >
+                    <div
+                        className="card"
+                        style={{ maxWidth: '440px', width: '100%', maxHeight: '90vh', overflow: 'auto' }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>Détails de l'utilisateur</h2>
+                            <button onClick={closeDetailModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted-foreground)' }}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {detailLoading ? (
+                            <Loader label="Chargement..." variant="block" style={{ minHeight: '140px' }} />
+                        ) : detailError ? (
+                            <p style={{ color: 'var(--destructive)' }}>{detailError}</p>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--secondary)', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '1.25rem' }}>
+                                        {detailModal.name?.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <div style={{ fontWeight: '600', fontSize: '1.125rem' }}>{detailModal.name}</div>
+                                        <span style={{
+                                            fontSize: '0.75rem',
+                                            background: detailModal.role === 'driver' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+                                            color: detailModal.role === 'driver' ? '#a855f7' : '#3b82f6',
+                                            padding: '0.2rem 0.5rem',
+                                            borderRadius: '4px'
+                                        }}>
+                                            {detailModal.role === 'driver' ? 'Chauffeur' : 'Client'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <Mail size={16} color="var(--muted-foreground)" />
+                                    <span>{detailModal.email}</span>
+                                </div>
+                                {detailModal.phoneNumber && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <Phone size={16} color="var(--muted-foreground)" />
+                                        <span>{detailModal.phoneNumber}</span>
+                                    </div>
+                                )}
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: detailModal.isOnline ? '#4ade80' : '#94a3b8' }} />
+                                    <span style={{ fontSize: '0.875rem' }}>{detailModal.isOnline ? 'En ligne' : 'Hors ligne'}</span>
+                                </div>
+
+                                {detailModal.role === 'driver' && detailModal.walletBalance != null && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <Wallet size={16} color="var(--muted-foreground)" />
+                                        <span>Solde portefeuille : <strong>{Number(detailModal.walletBalance).toLocaleString()} Fc</strong></span>
+                                    </div>
+                                )}
+
+                                {detailModal.role === 'driver' && (detailModal.address || detailModal.vehicleBrand || detailModal.vehicleModel || detailModal.vehiclePlate) && (
+                                    <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', marginTop: '0.25rem' }}>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginBottom: '0.5rem' }}>Informations chauffeur</div>
+                                        {detailModal.address && (
+                                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                                                <MapPin size={14} color="var(--muted-foreground)" style={{ marginTop: '2px' }} />
+                                                <span style={{ fontSize: '0.875rem' }}>{detailModal.address}</span>
+                                            </div>
+                                        )}
+                                        {(detailModal.vehicleBrand || detailModal.vehicleModel) && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                                                <Car size={14} color="var(--muted-foreground)" />
+                                                <span style={{ fontSize: '0.875rem' }}>{[detailModal.vehicleBrand, detailModal.vehicleModel].filter(Boolean).join(' ')}</span>
+                                            </div>
+                                        )}
+                                        {detailModal.vehiclePlate && (
+                                            <div style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>Plaque : {detailModal.vehiclePlate}</div>
+                                        )}
+                                        {detailModal.vehicleColor && (
+                                            <div style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>Couleur : {detailModal.vehicleColor}</div>
+                                        )}
+                                        {detailModal.isApproved === false && (
+                                            <span className="badge badge-warning" style={{ marginTop: '0.5rem', display: 'inline-block' }}>En attente d'approbation</span>
+                                        )}
+                                    </div>
+                                )}
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--muted-foreground)' }}>
+                                    <Calendar size={14} />
+                                    Inscrit le {detailModal.createdAt ? new Date(detailModal.createdAt).toLocaleDateString('fr-FR') : '---'}
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>ID : {detailModal.id}</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {resetModal && (
                 <div

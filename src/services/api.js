@@ -30,6 +30,11 @@ export const fetchUsers = async () => {
     return response.data;
 };
 
+export const fetchUserDetails = async (userId) => {
+    const response = await axios.get(`${API_URL}/users/${userId}`);
+    return response.data;
+};
+
 export const resetUserPassword = async (userId, newPassword) => {
     const response = await axios.post(`${API_URL}/users/${userId}/reset-password`, { newPassword });
     return response.data;
@@ -37,6 +42,11 @@ export const resetUserPassword = async (userId, newPassword) => {
 
 export const fetchTrips = async () => {
     const response = await axios.get(`${API_URL}/rides`);
+    return response.data;
+};
+
+export const fetchTripDetails = async (rideId) => {
+    const response = await axios.get(`${API_URL}/rides/${rideId}`);
     return response.data;
 };
 

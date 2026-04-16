@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post(`${WEB_URL}/auth/login`, { email, password });
+            const response = await axios.post(`${WEB_URL}/admin/auth/login`, { email, password });
             const { token: newToken, user: userData } = response.data;
 
             if (userData.role !== 'admin') {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MoreVertical, Mail, Phone, KeyRound, X, Wallet, Car, MapPin, Calendar, Eye } from 'lucide-react';
-import { fetchUsers, fetchUserDetails, resetUserPassword } from '../services/api';
+import { MoreVertical, Mail, Phone, KeyRound, X, Wallet, Car, MapPin, Calendar, Eye, Edit2, UserX, UserCheck } from 'lucide-react';
+import { fetchUsers, fetchUserDetails, resetUserPassword, updateUser, toggleUserStatus } from '../services/api';
 import Loader from '../components/Loader';
 
 const Users = () => {
@@ -17,6 +17,11 @@ const Users = () => {
     const [detailModal, setDetailModal] = useState(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [detailError, setDetailError] = useState(null);
+    const [editModal, setEditModal] = useState(null);
+    const [editData, setEditData] = useState({ name: '', email: '', phoneNumber: '' });
+    const [editLoading, setEditLoading] = useState(false);
+    const [editError, setEditError] = useState('');
+    const [statusLoading, setStatusLoading] = useState(null);
 
     useEffect(() => {
         const getUsers = async () => {
@@ -93,6 +98,53 @@ const Users = () => {
             setResetError(err.response?.data?.message || 'Erreur lors de la réinitialisation.');
         } finally {
             setResetLoading(false);
+        }
+    };
+
+    const openEditModal = (user) => {
+        setMenuOpen(null);
+        setEditModal(user);
+        setEditData({
+            name: user.name,
+            email: user.email,
+            phoneNumber: user.phoneNumber
+        });
+        setEditError('');
+    };
+
+    const closeEditModal = () => {
+        setEditModal(null);
+        setEditError('');
+    };
+
+    const handleUpdateUser = async () => {
+        if (!editModal) return;
+        if (!editData.name || !editData.email || !editData.phoneNumber) {
+            setEditError('Veuillez remplir tous les champs.');
+            return;
+        }
+        setEditLoading(true);
+        try {
+            await updateUser(editModal.id, editData);
+            setUsers(users.map(u => u.id === editModal.id ? { ...u, ...editData } : u));
+            closeEditModal();
+        } catch (err) {
+            setEditError(err.response?.data?.message || 'Erreur lors de la mise à jour.');
+        } finally {
+            setEditLoading(false);
+        }
+    };
+
+    const handleToggleStatus = async (user) => {
+        setMenuOpen(null);
+        setStatusLoading(user.id);
+        try {
+            const response = await toggleUserStatus(user.id);
+            setUsers(users.map(u => u.id === user.id ? { ...u, isActive: response.isActive } : u));
+        } catch (err) {
+            alert(err.response?.data?.message || 'Erreur lors du changement de statut');
+        } finally {
+            setStatusLoading(null);
         }
     };
 
@@ -179,7 +231,9 @@ const Users = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className="badge badge-success">Actif</span>
+                                        <span className={`badge ${user.isActive !== false ? 'badge-success' : 'badge-danger'}`}>
+                                            {user.isActive !== false ? 'Actif' : 'Désactivé'}
+                                        </span>
                                     </td>
                                     <td>
                                         <div style={{ position: 'relative' }}>
@@ -231,6 +285,24 @@ const Users = () => {
                                                             <Eye size={16} /> Voir les détails
                                                         </button>
                                                         <button
+                                                            onClick={() => openEditModal(user)}
+                                                            style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.5rem',
+                                                                width: '100%',
+                                                                padding: '0.6rem 1rem',
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                color: 'var(--foreground)',
+                                                                fontSize: '0.875rem',
+                                                                textAlign: 'left'
+                                                            }}
+                                                        >
+                                                            <Edit2 size={16} /> Modifier
+                                                        </button>
+                                                        <button
                                                             onClick={() => openResetModal(user)}
                                                             style={{
                                                                 display: 'flex',
@@ -247,6 +319,29 @@ const Users = () => {
                                                             }}
                                                         >
                                                             <KeyRound size={16} /> Réinitialiser le mot de passe
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleToggleStatus(user)}
+                                                            disabled={statusLoading === user.id}
+                                                            style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.5rem',
+                                                                width: '100%',
+                                                                padding: '0.6rem 1rem',
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                color: user.isActive !== false ? 'var(--destructive)' : '#22c55e',
+                                                                fontSize: '0.875rem',
+                                                                textAlign: 'left'
+                                                            }}
+                                                        >
+                                                            {user.isActive !== false ? (
+                                                                <><UserX size={16} /> Désactiver</>
+                                                            ) : (
+                                                                <><UserCheck size={16} /> Réactiver</>
+                                                            )}
                                                         </button>
                                                     </div>
                                                 </>
@@ -461,6 +556,120 @@ const Users = () => {
                                 }}
                             >
                                 {resetLoading ? 'En cours...' : 'Réinitialiser'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {editModal && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.5)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 50,
+                        padding: '1rem'
+                    }}
+                    onClick={closeEditModal}
+                >
+                    <div
+                        className="card"
+                        style={{ maxWidth: '440px', width: '100%' }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>Modifier l'utilisateur</h2>
+                            <button onClick={closeEditModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted-foreground)' }}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {editError && (
+                            <p style={{ color: 'var(--destructive)', fontSize: '0.875rem', marginBottom: '1rem' }}>{editError}</p>
+                        )}
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Nom complet</label>
+                                <input
+                                    type="text"
+                                    value={editData.name}
+                                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.6rem 0.75rem',
+                                        border: '1px solid var(--border)',
+                                        borderRadius: '6px',
+                                        background: 'var(--background)',
+                                        color: 'var(--foreground)'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Email</label>
+                                <input
+                                    type="email"
+                                    value={editData.email}
+                                    onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.6rem 0.75rem',
+                                        border: '1px solid var(--border)',
+                                        borderRadius: '6px',
+                                        background: 'var(--background)',
+                                        color: 'var(--foreground)'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Téléphone</label>
+                                <input
+                                    type="text"
+                                    value={editData.phoneNumber}
+                                    onChange={(e) => setEditData({ ...editData, phoneNumber: e.target.value })}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.6rem 0.75rem',
+                                        border: '1px solid var(--border)',
+                                        borderRadius: '6px',
+                                        background: 'var(--background)',
+                                        color: 'var(--foreground)'
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                            <button
+                                onClick={closeEditModal}
+                                style={{
+                                    padding: '0.6rem 1.25rem',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '6px',
+                                    background: 'none',
+                                    color: 'var(--foreground)',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                onClick={handleUpdateUser}
+                                disabled={editLoading}
+                                style={{
+                                    padding: '0.6rem 1.25rem',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    background: 'var(--primary)',
+                                    color: 'white',
+                                    cursor: editLoading ? 'not-allowed' : 'pointer'
+                                }}
+                            >
+                                {editLoading ? 'Enregistrement...' : 'Enregistrer'}
                             </button>
                         </div>
                     </div>

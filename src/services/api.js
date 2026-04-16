@@ -40,6 +40,16 @@ export const resetUserPassword = async (userId, newPassword) => {
     return response.data;
 };
 
+export const updateUser = async (userId, userData) => {
+    const response = await axios.put(`${API_URL}/users/${userId}`, userData);
+    return response.data;
+};
+
+export const toggleUserStatus = async (userId) => {
+    const response = await axios.patch(`${API_URL}/users/${userId}/toggle-status`);
+    return response.data;
+};
+
 export const fetchTrips = async () => {
     const response = await axios.get(`${API_URL}/rides`);
     return response.data;
